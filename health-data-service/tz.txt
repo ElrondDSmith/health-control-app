@@ -1,0 +1,36 @@
+1. хранить результаты измерений давления в БД
+2. добавлять результаты
+3. получать последние х результатов
+4. получать результаты за х последних дней
+5. получать результаты за период
+
+src/main/java/org/snp/blood_pressure/
+│
+├── BloodPressureApplication.java           // Класс запуска Spring Boot
+│
+├── config/                                 // Конфигурация (БД, безопасность, др.)
+│   └── DatabaseConfig.java                  // Конфигурация подключения к Postgres
+│
+├── controller/                             // REST контроллеры
+│   ├── UserController.java                  // API для пользователей
+│   └── PressureRecordController.java       // API для данных измерений давления
+│
+├── dto/                                    // DTO — объекты передачи данных
+│   ├── UserDto.java
+│   └── PressureRecordDto.java
+│
+├── entity/                                 // JPA или Spring Data JDBC сущности (модели)
+│   ├── User.java
+│   └── PressureRecord.java
+│
+├── repository/                             // Репозитории для доступа к БД
+│   ├── UserRepository.java
+│   └── PressureRecordRepository.java
+│
+├── service/                                // Сервисный слой — бизнес-логика
+│   ├── UserService.java
+│   └── PressureRecordService.java
+│
+└── exception/                              // Кастомные исключения и обработчики
+    ├── ResourceNotFoundException.java
+    └── GlobalExceptionHandler.java

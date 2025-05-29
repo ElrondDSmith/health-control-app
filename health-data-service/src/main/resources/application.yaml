@@ -1,0 +1,21 @@
+spring:
+  config:
+    import: classpath:application-secrets.yaml
+  datasource:
+    url: jdbc:postgresql://localhost:5432/medical
+    driver-class-name: org.postgresql.Driver
+
+logging:
+  level:
+    org:
+      springframework:
+        jdbc:
+          core: TRACE
+
+#database settings
+custom:
+  database:
+    schema: health
+    tables:
+      users: users
+      pressure_records: pressure_records

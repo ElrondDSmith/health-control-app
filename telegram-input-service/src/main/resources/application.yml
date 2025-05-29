@@ -1,0 +1,15 @@
+spring:
+  config:
+    import: classpath:application-secrets.yaml
+server:
+    port: 8081
+
+telegram:
+  bot:
+    webhook-path: https://3509-77-238-245-240.ngrok-free.app
+
+logging:
+  level:
+    org.snp.Telegram.Input.Service: DEBUG
+    org.springframework.web.client.RestTemplate: DEBUG
+    org.apache.http: DEBUG

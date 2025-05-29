@@ -1,0 +1,43 @@
+# Maven
+/target/
+/.mvn/
+dependency-reduced-pom.xml
+buildNumber.properties
+.release.properties
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+
+#yaml
+health-data-service/src/main/resources/application-secrets.yaml
+telegram-input-service/src/main/resources/application-secrets.yaml
+
+# IntelliJ IDEA
+/.idea/
+/*.iml
+/*.iws
+/out/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Java class files
+*.class
+
+# Spring Boot Devtools restart files
+restart.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# JAR files (если не хочешь коммитить собранные артефакты)
+*.jar
+
+# Environment variables file
+.env
