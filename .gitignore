@@ -11,7 +11,9 @@ pom.xml.next
 
 #yaml
 health-data-service/src/main/resources/application-secrets.yaml
+health-data-service/src/main/resources/application-local.yaml
 telegram-input-service/src/main/resources/application-secrets.yaml
+telegram-input-service/src/main/resources/application-local.yaml
 
 # IntelliJ IDEA
 /.idea/

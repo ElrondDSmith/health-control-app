@@ -1,0 +1,5 @@
+telegram:
+  bot:
+    username: ${TELEGRAM_BOT_USERNAME}
+    token: ${TELEGRAM_BOT_TOKEN}
+    webhook-path: ${TELEGRAM_BOT_WEBHOOK}

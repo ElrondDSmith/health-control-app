@@ -1,8 +1,7 @@
 spring:
-  config:
-    import: classpath:application-secrets.yaml
+  profiles:
+    active: local
   datasource:
-    url: jdbc:postgresql://localhost:5432/medical
     driver-class-name: org.postgresql.Driver
 
 logging:
