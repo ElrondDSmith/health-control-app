@@ -1,6 +1,6 @@
 # Maven
 /target/
-/.mvn/
+#/.mvn/
 dependency-reduced-pom.xml
 buildNumber.properties
 .release.properties
