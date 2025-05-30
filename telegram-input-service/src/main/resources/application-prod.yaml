@@ -1,5 +1,11 @@
+server:
+  port: ${PORT:8080}
+
 telegram:
   bot:
     username: ${TELEGRAM_BOT_USERNAME}
     token: ${TELEGRAM_BOT_TOKEN}
     webhook-path: ${TELEGRAM_BOT_WEBHOOK}
+
+other-service:
+  base-url: ${HEALTH_DATA_SERVICE_URL:http://localhost:8080}

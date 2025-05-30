@@ -1,5 +1,11 @@
+server:
+  port: 8081
+
 telegram:
   bot:
     username: my_tg_username
     token: my_tg_token
     webhook-path: https://my_webhook-path
+
+other-service:
+  base-url: http://localhost:8080

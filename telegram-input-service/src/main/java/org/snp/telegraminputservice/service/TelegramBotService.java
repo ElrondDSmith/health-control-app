@@ -9,6 +9,7 @@ import org.snp.telegraminputservice.dto.UserRegDto;
 import org.snp.telegraminputservice.formatter.PressureMessageFormatter;
 import org.snp.telegraminputservice.model.UserSession;
 import org.snp.telegraminputservice.model.UserState;
+import org.snp.telegraminputservice.provider.UrlProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -31,11 +32,11 @@ import java.util.*;
 @Slf4j
 public class TelegramBotService implements WebhookBot {
 
-    private static final String USER_REG_URL = "http://localhost:8080/save_user";
-    private static final String BLOOD_PRESSURE_SAVE_URL = "http://localhost:8080/save";
-    private static final String GET_ALL_RECORDS_BY_ID_URL = "http://localhost:8080/user/{tgId}";
-    private static final String GET_RECORDS_BY_ID_AND_DATE = "http://localhost:8080/user/{tgId}/date?date={date}";
-    private static final String GET_RECORDS_BY_ID_AND_LAST_N_DAYS = "http://localhost:8080/user/{tgId}/number_of_days?numberOfDays={numberOfDays}";
+//    private static final String USER_REG_URL = "http://localhost:8080/save_user";
+//    private static final String BLOOD_PRESSURE_SAVE_URL = "http://localhost:8080/save";
+//    private static final String GET_ALL_RECORDS_BY_ID_URL = "http://localhost:8080/user/{tgId}";
+//    private static final String GET_RECORDS_BY_ID_AND_DATE = "http://localhost:8080/user/{tgId}/date?date={date}";
+//    private static final String GET_RECORDS_BY_ID_AND_LAST_N_DAYS = "http://localhost:8080/user/{tgId}/number_of_days?numberOfDays={numberOfDays}";
     private static final Integer MIN_SYS = 40;
     private static final Integer MAX_SYS = 300;
     private static final Integer MIN_DIA = 30;
@@ -69,15 +70,18 @@ public class TelegramBotService implements WebhookBot {
     private final TelegramBotProperties telegramBotProperties;
     private final RestTemplate restTemplate;
     private final PressureMessageFormatter pressureMessageFormatter;
+    private final UrlProvider urlProvider;
     private final Map<Long, UserSession> sessions = new HashMap<>();
 
     @Autowired
     public TelegramBotService(TelegramBotProperties telegramBotProperties,
                               RestTemplate restTemplate,
-                              PressureMessageFormatter pressureMessageFormatter) {
+                              PressureMessageFormatter pressureMessageFormatter,
+                              UrlProvider urlProvider) {
         this.telegramBotProperties = telegramBotProperties;
         this.restTemplate = restTemplate;
         this.pressureMessageFormatter = pressureMessageFormatter;
+        this.urlProvider = urlProvider;
     }
 
     @PostConstruct
@@ -120,7 +124,7 @@ public class TelegramBotService implements WebhookBot {
                             userRegDto.setTgId(update.getMessage().getFrom().getId());
                             userRegDto.setUserName(update.getMessage().getFrom().getUserName());
                             try {
-                                restTemplate.postForEntity(USER_REG_URL, userRegDto, Void.class); //заменить на postForObject и обработать json
+                                restTemplate.postForEntity(urlProvider.getUserRegUrl(), userRegDto, Void.class); //заменить на postForObject и обработать json
                                 log.info("Данные пользователя отправлены");
                             } catch (Exception e) {
                                 log.error("Ошибка при отправке пользователя в сервис БД: " + e.getMessage());
@@ -215,7 +219,7 @@ public class TelegramBotService implements WebhookBot {
                         case "ОТПРАВИТЬ" -> {
                             session.setUserState(UserState.NONE);
                             try {
-                                restTemplate.postForEntity(BLOOD_PRESSURE_SAVE_URL, pressureDtoCreate(session), String.class);
+                                restTemplate.postForEntity(urlProvider.getBloodPressureSaveUrl(), pressureDtoCreate(session), String.class);
                                 log.info("Данные давления успешно отправлены; {}", pressureDtoCreate(session));
                             } catch (Exception e) {
                                 log.error("Ошибка при отправке данных давления: {}", e.getMessage());
@@ -411,7 +415,7 @@ public class TelegramBotService implements WebhookBot {
         uriVariables.put("tgId", tgId);
         uriVariables.put("date", date.toString());
         ResponseEntity<PressureRecordDtoRs[]> response = restTemplate.getForEntity(
-                GET_RECORDS_BY_ID_AND_DATE, PressureRecordDtoRs[].class, uriVariables);
+                urlProvider.getRecordsByIdAndDate(), PressureRecordDtoRs[].class, uriVariables);
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
             return Arrays.asList(response.getBody());
         } else {
@@ -424,7 +428,7 @@ public class TelegramBotService implements WebhookBot {
         uriVariables.put("tgId", tgId);
         uriVariables.put("numberOfDays", numberOfDays);
         ResponseEntity<PressureRecordDtoRs[]> response = restTemplate.getForEntity(
-                GET_RECORDS_BY_ID_AND_LAST_N_DAYS, PressureRecordDtoRs[].class, uriVariables);
+                urlProvider.getRecordsByIdAndLastNDays(), PressureRecordDtoRs[].class, uriVariables);
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
             return Arrays.asList(response.getBody());
         } else {
@@ -436,7 +440,7 @@ public class TelegramBotService implements WebhookBot {
         Map<String, Object> uriVariables = new HashMap<>();
         uriVariables.put("tgId", tgId);
         ResponseEntity<PressureRecordDtoRs[]> response = restTemplate.getForEntity(
-                GET_ALL_RECORDS_BY_ID_URL, PressureRecordDtoRs[].class, uriVariables);
+                urlProvider.getAllRecordsByIdUrl(), PressureRecordDtoRs[].class, uriVariables);
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
             return Arrays.asList(response.getBody());
         } else {
