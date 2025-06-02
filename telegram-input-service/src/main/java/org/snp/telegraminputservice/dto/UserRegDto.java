@@ -1,8 +1,10 @@
 package org.snp.telegraminputservice.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 public class UserRegDto {
 
     private Long tgId;

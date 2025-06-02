@@ -1,6 +1,8 @@
 package org.snp.telegraminputservice.configuration;
 
 import org.snp.telegraminputservice.formatter.PressureMessageFormatter;
+import org.snp.telegraminputservice.handler.TelegramCommandHandler;
+import org.snp.telegraminputservice.service.HealthDataClient;
 import org.snp.telegraminputservice.service.TelegramBotService;
 import org.snp.telegraminputservice.provider.UrlProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,25 +15,21 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @Configuration
 public class TelegramBotConfig {
     private final TelegramBotProperties telegramBotProperties;
-    private final PressureMessageFormatter pressureMessageFormatter;
-    private final UrlProvider urlProvider;
+    private final TelegramCommandHandler telegramCommandHandler;
 
     @Autowired
     public TelegramBotConfig(TelegramBotProperties telegramBotProperties,
-                             PressureMessageFormatter pressureMessageFormatter,
-                             UrlProvider urlProvider) {
+                             TelegramCommandHandler telegramCommandHandler) {
         this.telegramBotProperties = telegramBotProperties;
-        this.pressureMessageFormatter = pressureMessageFormatter;
-        this.urlProvider = urlProvider;
+        this.telegramCommandHandler = telegramCommandHandler;
     }
 
     @Bean
     public TelegramBotService telegramBotService(RestTemplate restTemplate) {
         SetWebhook setWebhook = SetWebhook.builder().url(telegramBotProperties.getWebhookPath()).build();
-        TelegramBotService telegramBotService = new TelegramBotService(telegramBotProperties,
-                restTemplate,
-                pressureMessageFormatter,
-                urlProvider);
+        TelegramBotService telegramBotService = new TelegramBotService(
+                telegramBotProperties,
+                telegramCommandHandler);
         try {
             telegramBotService.setWebhook(setWebhook);
         } catch (TelegramApiException e) {
