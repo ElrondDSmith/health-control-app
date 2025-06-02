@@ -118,11 +118,19 @@ public class TelegramCommandHandler {
             }
             case "Все записи" -> {
                 RequestResult<List<PressureRecordDtoRs>> result = healthDataClient.getAllById(userId);
-                if (result.isSuccess()) {
+                if (!result.isSuccess()) {
+                    sendMessage.setText("⚠️ Не удалось получить записи: " + result.errorMessage());
+                    goToMainMenu(sendMessage, session);
+                    return sendMessage;
+                }
+                List<PressureRecordDtoRs> recordDtoRs = result.data();
+                if (recordDtoRs == null || recordDtoRs.isEmpty()) {
+                    sendMessage.setText("Записи отсутствуют.");
+                    goToMainMenu(sendMessage, session);
+                    return sendMessage;
+                } else {
                     sendMessage.setText(pressureMessageFormatter.formatListOfRecords(result.data()));
                     goToMainMenu(sendMessage, session);
-                } else {
-                    sendMessage.setText("Нет данных");
                 }
             }
             case "Главное меню" -> {
@@ -147,6 +155,7 @@ public class TelegramCommandHandler {
 
         if ("Главное меню".equals(text)) {
             returnToMainMenu(sendMessage, session);
+            return sendMessage;
         } else {
             try {
                 int systolic = Integer.parseInt(text);
@@ -176,6 +185,7 @@ public class TelegramCommandHandler {
 
         if ("Главное меню".equals(text)) {
             returnToMainMenu(sendMessage, session);
+            return sendMessage;
         } else {
             try {
                 int diastolic = Integer.parseInt(text);
@@ -205,6 +215,7 @@ public class TelegramCommandHandler {
 
         if ("Главное меню".equals(text)) {
             returnToMainMenu(sendMessage, session);
+            return sendMessage;
         } else {
             try {
                 int pulse = Integer.parseInt(text);
@@ -275,16 +286,31 @@ public class TelegramCommandHandler {
         }
         if ("Главное меню".equals(text)) {
             returnToMainMenu(sendMessage, session);
+            return sendMessage;
         }
         if ("Назад".equals(text)) {
             toPressureMenu(sendMessage, session);
+            return sendMessage;
         } else {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
             try {
                 LocalDate date = LocalDate.parse(text.trim(), formatter);
                 RequestResult<List<PressureRecordDtoRs>> result = healthDataClient.getByIdAndDate(userId, date);
-                sendMessage.setText(pressureMessageFormatter.formatListOfRecords(result.data()));
+                if (!result.isSuccess()) {
+                    sendMessage.setText("⚠️ Не удалось получить записи: " + result.errorMessage());
+                    goToMainMenu(sendMessage, session);
+                    return sendMessage;
+                }
+                List<PressureRecordDtoRs> recordDtoRs = result.data();
+                if (recordDtoRs == null || recordDtoRs.isEmpty()) {
+                    sendMessage.setText("За указанную дату записи отсутствуют.");
+                    goToMainMenu(sendMessage, session);
+                    return sendMessage;
+                }
+                sendMessage.setText(pressureMessageFormatter.formatListOfRecords(recordDtoRs));
                 goToMainMenu(sendMessage, session);
+
+
             } catch (DateTimeParseException e) {
                 sendMessage.setText("❌ Некорректный формат даты\nВведите дату в формате ДД.ММ.ГГГГ (пример 01.01.2025)");
             }
@@ -304,15 +330,29 @@ public class TelegramCommandHandler {
         }
         if ("Главное меню".equals(text)) {
             returnToMainMenu(sendMessage, session);
+            return sendMessage;
         }
         if ("Назад".equals(text)) {
             toPressureMenu(sendMessage, session);
+            return sendMessage;
         } else {
             try {
                 int days = Integer.parseInt(text.trim());
                 RequestResult<List<PressureRecordDtoRs>> result = healthDataClient.getByIdAndDays(userId, days);
-                sendMessage.setText(pressureMessageFormatter.formatListOfRecords(result.data()));
-                goToMainMenu(sendMessage, session);
+                if (!result.isSuccess()) {
+                    sendMessage.setText("⚠️ Не удалось получить записи: " + result.errorMessage());
+                    goToMainMenu(sendMessage, session);
+                    return sendMessage;
+                }
+                List<PressureRecordDtoRs> recordDtoRs = result.data();
+                if (recordDtoRs == null || recordDtoRs.isEmpty()) {
+                    sendMessage.setText("За указанные дни записи отсутствуют.");
+                    goToMainMenu(sendMessage, session);
+                    return sendMessage;
+                } else {
+                    sendMessage.setText(pressureMessageFormatter.formatListOfRecords(result.data()));
+                    goToMainMenu(sendMessage, session);
+                }
             } catch (NumberFormatException e) {
                 sendMessage.setText("❌ Введите корректное положительное число дней, например: 3, 7 или 30.");
             }

@@ -61,7 +61,8 @@ public class HealthDataClient {
 
     private RequestResult<List<PressureRecordDtoRs>> convertArrayResult(RequestResult<PressureRecordDtoRs[]> arrayResult) {
         if (arrayResult.isSuccess()) {
-            return RequestResult.success(Arrays.asList(arrayResult.data()));
+            PressureRecordDtoRs[] rawArray = Optional.ofNullable(arrayResult.data()).orElse(new PressureRecordDtoRs[0]);
+            return RequestResult.success(Arrays.asList(rawArray));
         } else {
             return RequestResult.failure(arrayResult.errorMessage(), arrayResult.status());
         }
