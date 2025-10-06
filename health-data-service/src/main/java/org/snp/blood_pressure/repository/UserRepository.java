@@ -29,6 +29,7 @@ public class UserRepository {
         String sql = """
                 Select * from health.users
                 """;
+        //ToDo проверить на утечку соединения
         return jdbcTemplate.queryForStream(sql, this::appUserRowMapper).toList();
     }
 

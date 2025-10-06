@@ -12,7 +12,7 @@ public class initService {
     private final PressureRecordRepository pressureRecordRepository;
     private final UserRepository userRepository;
 
-    @PostConstruct
+    //@PostConstruct
     public void init() {
 //        userRepository.createUser(new AppUser("Alex", "Alex@alex.com", "tg001"));
 //        userRepository.createUser(new AppUser("Jules", "Jules@Jules.com", "tg002"));

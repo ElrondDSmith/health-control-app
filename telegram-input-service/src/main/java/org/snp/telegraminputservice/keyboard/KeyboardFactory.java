@@ -10,7 +10,7 @@ public class KeyboardFactory {
 
     public static ReplyKeyboardMarkup mainMenuKeyboard() {
         return createReplyKeyboard(List.of(
-                List.of("Отправить данные о давлении"),
+                List.of("Сохранить данные о давлении"),
                 List.of("Получить данные о давлении"),
                 List.of("Старт", "Помощь")
         ));
@@ -27,7 +27,7 @@ public class KeyboardFactory {
 
     public static ReplyKeyboardMarkup sendMenuKeyboard() {
         return createReplyKeyboard(List.of(
-                List.of("ОТПРАВИТЬ"),
+                List.of("СОХРАНИТЬ"),
                 List.of("Исправить данные", "Главное меню")
         ));
     }
@@ -40,6 +40,22 @@ public class KeyboardFactory {
 
     public static ReplyKeyboardMarkup goBackOrMainMenuKeyboard() {
         return createReplyKeyboard(List.of(
+                List.of("Назад", "Главное меню")
+        ));
+    }
+
+    public static ReplyKeyboardMarkup receiveMenuKeyboard() {
+        return createReplyKeyboard(List.of(
+                List.of("Сообщение", "PDF"),
+                List.of("Главное меню", "Помощь")
+        ));
+    }
+
+    public static ReplyKeyboardMarkup pdfMenuKeyboard() {
+        return createReplyKeyboard(List.of(
+                List.of("За последние 7 дней"),
+                List.of("За последние 14 дней"),
+                List.of("За последние 30 дней"),
                 List.of("Назад", "Главное меню")
         ));
     }

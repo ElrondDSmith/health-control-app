@@ -9,3 +9,4 @@ telegram:
 
 other-service:
   base-url: ${HEALTH_DATA_SERVICE_URL:http://localhost:8080}
+  pdf-url: ${PDF_SERVICE_URL:http://localhost:8083}

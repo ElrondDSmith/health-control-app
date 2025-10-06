@@ -8,5 +8,7 @@ public enum UserState {
     PRESSURE_MENU,
     WAITING_FOR_DATE,
     WAITING_FOR_DAYS,
-    WAITING_FOR_SEND
+    WAITING_FOR_SEND,
+    RECEIVE_MENU,
+    PDF_MENU
 }

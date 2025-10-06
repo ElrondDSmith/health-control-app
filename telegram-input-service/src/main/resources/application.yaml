@@ -1,5 +1,17 @@
+spring:
+  config:
+    import: classpath:messages.yaml
+
 logging:
   level:
     org.snp.Telegram.Input.Service: DEBUG
     org.springframework.web.client.RestTemplate: DEBUG
     org.apache.http: DEBUG
+pressure:
+  limits:
+    min-sys: 40
+    max-sys: 300
+    min-dia: 30
+    max-dia: 200
+    min-pulse: 20
+    max-pulse: 300

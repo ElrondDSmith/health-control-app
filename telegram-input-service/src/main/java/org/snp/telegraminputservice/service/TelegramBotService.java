@@ -1,50 +1,37 @@
 package org.snp.telegraminputservice.service;
 
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.snp.telegraminputservice.common.RequestResult;
 import org.snp.telegraminputservice.configuration.TelegramBotProperties;
-import org.snp.telegraminputservice.dto.PressureRecordDtoRq;
-import org.snp.telegraminputservice.dto.PressureRecordDtoRs;
-import org.snp.telegraminputservice.dto.UserRegDto;
-import org.snp.telegraminputservice.formatter.PressureMessageFormatter;
-import org.snp.telegraminputservice.handler.TelegramCommandHandler;
+import org.snp.telegraminputservice.handler.CommandHandler;
+import org.snp.telegraminputservice.messages.MessagesProperties;
 import org.snp.telegraminputservice.model.UserSession;
-import org.snp.telegraminputservice.model.UserState;
-import org.snp.telegraminputservice.provider.UrlProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
+import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.generics.WebhookBot;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
-public class TelegramBotService implements WebhookBot {
+@RequiredArgsConstructor
+public class TelegramBotService extends TelegramWebhookBot {
 
     private final TelegramBotProperties telegramBotProperties;
-    private final TelegramCommandHandler telegramCommandHandler;
+    private final List<CommandHandler> handlers;
+    private final MessagesProperties messagesProperties;
 
     private final Map<Long, UserSession> sessions = new HashMap<>();
-
-    @Autowired
-    public TelegramBotService(TelegramBotProperties telegramBotProperties,
-                              TelegramCommandHandler telegramCommandHandler) {
-        this.telegramBotProperties = telegramBotProperties;
-        this.telegramCommandHandler = telegramCommandHandler;
-    }
 
     @PostConstruct
     public void init() {
@@ -73,17 +60,36 @@ public class TelegramBotService implements WebhookBot {
             Message message = update.getMessage();
             Long chatId = message.getChatId();
             UserSession session = sessions.computeIfAbsent(chatId, id -> new UserSession());
+            List<PartialBotApiMethod<?>> results = null;
 
-            return switch (session.getUserState()) {
-                case NONE -> telegramCommandHandler.handleMainMenuCommand(message, session);
-                case WAITING_FOR_SYSTOLIC -> telegramCommandHandler.handleSystolicInput(message, session);
-                case WAITING_FOR_DIASTOLIC -> telegramCommandHandler.handleDiastolicInput(message, session);
-                case WAITING_FOR_PULSE -> telegramCommandHandler.handlePulseInput(message, session);
-                case WAITING_FOR_SEND -> telegramCommandHandler.handleSendInput(message, session);
-                case PRESSURE_MENU -> telegramCommandHandler.handlePressureMenuCommand(message, session);
-                case WAITING_FOR_DATE -> telegramCommandHandler.handleDateInput(message, session);
-                case WAITING_FOR_DAYS -> telegramCommandHandler.handleDaysInput(message, session);
-            };
+            for (CommandHandler handler : handlers) {
+                if (handler.canHandle(session.getUserState(), message)) {
+                    results = handler.handle(message, session);
+                    break;
+                }
+            }
+            if (results == null) {
+                results = List.of(new SendMessage(
+                        String.valueOf(chatId),
+                        messagesProperties.getCommon().getUnknownRequest()));
+            }
+            for (PartialBotApiMethod<?> method : results) {
+                try {
+                    if (method instanceof BotApiMethod<?> botApiMethod) {
+                        execute(botApiMethod);
+                    } else if (method instanceof SendDocument sendDocument) {
+                        execute(sendDocument);
+                    } else if (method instanceof SendPhoto sendPhoto) {
+                        execute(sendPhoto);
+                    } else if (method instanceof SendVideo sendVideo) {
+                        execute(sendVideo);
+                    } else {
+                        log.error("Неподдерживаемый метод: {}", method.getClass().getSimpleName());
+                    }
+                } catch (TelegramApiException e) {
+                    log.error("Ошибка отправки сообщения: {}", e.getMessage(), e);
+                }
+            }
         }
         return null;
     }

@@ -1,0 +1,59 @@
+package org.snp.telegraminputservice.handler;
+
+import org.snp.telegraminputservice.keyboard.KeyboardFactory;
+import org.snp.telegraminputservice.messages.MessagesProperties;
+import org.snp.telegraminputservice.model.UserSession;
+import org.snp.telegraminputservice.model.UserState;
+import org.snp.telegraminputservice.properties.PressureLimits;
+import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
+
+import java.util.List;
+
+@Component
+public class PulseInputHandler extends AbstractInputHandler {
+
+    private final PressureLimits limits;
+
+    public PulseInputHandler(MessagesProperties messagesProperties, PressureLimits pressureLimits) {
+        super(messagesProperties);
+        this.limits = pressureLimits;
+    }
+
+    @Override
+    protected UserState targetState() {
+        return UserState.WAITING_FOR_PULSE;
+    }
+
+    @Override
+    public List<PartialBotApiMethod<?>> handle(Message message, UserSession userSession) {
+
+        String text = message.getText();
+        SendMessage menuMessage = createMessage(message);
+        SendMessage errorMessage = createMessage(message);
+        SendMessage resultMessage = createMessage(message);
+
+        if ("Главное меню".equals(text)) {
+            goToMainMenu(userSession, menuMessage);
+            return single(menuMessage);
+        } else {
+            try {
+                int pulse = Integer.parseInt(text);
+                if (pulse < limits.getMinPulse() || pulse > limits.getMaxPulse()) {
+                    throw new NumberFormatException();
+                }
+                userSession.setPulse(Integer.parseInt(text));
+                userSession.setUserState(UserState.WAITING_FOR_SEND);
+                resultMessage.setText(String.format(messagesProperties.getPressureInput().getDataSendConfirm(),
+                        userSession.getSystolic(), userSession.getDiastolic(), userSession.getPulse()));
+                resultMessage.setReplyMarkup(KeyboardFactory.sendMenuKeyboard());
+                return single(resultMessage);
+            } catch (NumberFormatException e) {
+                errorMessage.setText(messagesProperties.getPressureInput().getIncorrectPulseInput());
+                return single(errorMessage);
+            }
+        }
+    }
+}

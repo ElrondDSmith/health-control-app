@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -33,7 +34,9 @@ public class PressureRecordRepository {
         String sql = """
                 select * from health.pressure_records where user_id = ?
                 """;
-        return jdbcTemplate.queryForStream(sql, this::pressureRecordRowMapper, userId).toList();
+        try (Stream<PressureRecord> stream = jdbcTemplate.queryForStream(sql, this::pressureRecordRowMapper, userId)){
+            return stream.toList();
+        }
     }
 
     public List<PressureRecord> findByUserIdAndDate(long userId, LocalDate date) {
@@ -41,11 +44,13 @@ public class PressureRecordRepository {
                 select * from health.pressure_records where user_id = ?
                  and record_time >= ? and record_time < ?
                 """;
-        return jdbcTemplate.queryForStream(sql,
+        try (Stream<PressureRecord> stream = jdbcTemplate.queryForStream(sql,
                 this::pressureRecordRowMapper,
                 userId,
                 date.atStartOfDay(),
-                date.plusDays(1).atStartOfDay()).toList();
+                date.plusDays(1).atStartOfDay())){
+            return stream.toList();
+        }
     }
 
     public List<PressureRecord> findByUserIdAndLastNDays(long userId, int days) {
@@ -56,7 +61,9 @@ public class PressureRecordRepository {
                  and record_time < (current_date + interval '1 day')
                  order by record_time desc
                 """;
-        return jdbcTemplate.queryForStream(sql, this::pressureRecordRowMapper, userId, days).toList();
+        try (Stream<PressureRecord> stream = jdbcTemplate.queryForStream(sql, this::pressureRecordRowMapper, userId, days)){
+            return stream.toList();
+        }
     }
 
     private PressureRecord pressureRecordRowMapper(ResultSet rs, int rowNumber) {

@@ -5,13 +5,15 @@
 
     <groupId>org.snp</groupId>
     <artifactId>health-control-app</artifactId>
-    <version>0.2.1-SNAPSHOT</version>
+    <version>0.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>health-control-app</name>
 
     <modules>
         <module>health-data-service</module>
         <module>telegram-input-service</module>
+        <!-- <module>auth-service</module> -->
+        <module>pdf-service</module>
     </modules>
 
     <properties>
