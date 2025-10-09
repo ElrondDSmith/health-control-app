@@ -24,8 +24,4 @@ public class ReportController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
     }
-    @GetMapping(value = "test")
-    public String testString() {
-        return "test";
-    }
 }
