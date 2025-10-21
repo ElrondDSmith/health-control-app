@@ -1,12 +1,17 @@
 spring:
   config:
     import: classpath:messages.yaml
+  profiles:
+    group:
+      prod: prod
+      local: local
+      sleep: sleep
 
 logging:
   level:
-    org.snp.Telegram.Input.Service: DEBUG
-    org.springframework.web.client.RestTemplate: DEBUG
-    org.apache.http: DEBUG
+    org.snp.Telegram.Input.Service: INFO
+    org.springframework.web.client.RestTemplate: INFO
+    org.apache.http: INFO
 pressure:
   limits:
     min-sys: 40

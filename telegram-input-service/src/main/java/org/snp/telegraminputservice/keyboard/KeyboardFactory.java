@@ -60,6 +60,12 @@ public class KeyboardFactory {
         ));
     }
 
+    public static ReplyKeyboardMarkup wakeUpKeyboard() {
+        return createReplyKeyboard(List.of(
+                List.of("РАЗБУДИТЬ СЕРВИСЫ")
+        ));
+    }
+
     private static ReplyKeyboardMarkup createReplyKeyboard(List<List<String>> buttonRows) {
         List<KeyboardRow> keyboard = new ArrayList<>();
         for (List<String> row : buttonRows) {

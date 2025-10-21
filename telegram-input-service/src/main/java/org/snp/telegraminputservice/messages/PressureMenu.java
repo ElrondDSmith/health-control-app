@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 public class PressureMenu {
+
     private String start;
     private String oneDayRequest;
     private String periodRequest;

@@ -10,4 +10,4 @@ RUN ./mvnw clean package -DskipTests -pl telegram-input-service -am
 
 EXPOSE 8081
 
-CMD ["java", "-jar", "telegram-input-service/target/telegram-input-service-0.3.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "telegram-input-service/target/telegram-input-service-0.4.0-SNAPSHOT.jar"]

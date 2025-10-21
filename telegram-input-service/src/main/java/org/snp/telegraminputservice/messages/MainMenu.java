@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 public class MainMenu {
+
     private String start;
     private String back;
     private String registrationFail;

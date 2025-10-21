@@ -25,7 +25,6 @@ public abstract class AbstractCommandHandler implements CommandHandler {
 
     protected abstract boolean allowAnyText();
 
-
     public boolean canHandle(UserState userState, Message message) {
         if (userState != targetState() || message == null || message.getText() == null) {
             return false;
@@ -89,6 +88,14 @@ public abstract class AbstractCommandHandler implements CommandHandler {
 
         userSession.setUserId(userId);
         userSession.setUserName(userName);
+    }
+
+    protected void goToWakeUpMenu(UserSession userSession, SendMessage sendMessage) {
+        goToMenu(userSession,
+                UserState.WAKE_UP_MENU,
+                sendMessage,
+                KeyboardFactory.wakeUpKeyboard(),
+                messagesProperties.getWakeUpMenu().getSleep());
     }
 
     protected PressureRecordDtoRq pressureDtoCreate(UserSession session) {

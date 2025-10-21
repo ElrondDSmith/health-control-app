@@ -5,7 +5,7 @@
 
     <groupId>org.snp</groupId>
     <artifactId>health-control-app</artifactId>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>health-control-app</name>
 
@@ -14,6 +14,7 @@
         <module>telegram-input-service</module>
         <!-- <module>auth-service</module> -->
         <module>pdf-service</module>
+        <!-- <module>image-recognition-service</module> -->
     </modules>
 
     <properties>

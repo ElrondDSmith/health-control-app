@@ -3,11 +3,10 @@ package org.snp.telegraminputservice.messages;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
-@Data
 @Component
-public class ReceiveMenu {
+@Data
+public class WakeUpMenu {
 
-    private String start;
-    private String help;
-    private String unknownRequest;
+    private String sleep;
+    private String failure;
 }

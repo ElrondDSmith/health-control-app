@@ -10,5 +10,6 @@ public enum UserState {
     WAITING_FOR_DAYS,
     WAITING_FOR_SEND,
     RECEIVE_MENU,
-    PDF_MENU
+    PDF_MENU,
+    WAKE_UP_MENU
 }

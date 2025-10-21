@@ -37,7 +37,7 @@ public class TelegramBotConfig {
         try {
             telegramBotService.setWebhook(setWebhook);
         } catch (TelegramApiException e) {
-            throw new RuntimeException("Ошибка при установке Webhook", e);
+            throw new RuntimeException(messagesProperties.getWebhook().getWebhookSetError(), e);
         }
         return telegramBotService;
     }

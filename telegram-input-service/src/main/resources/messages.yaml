@@ -1,22 +1,19 @@
 messages:
 
   common:
-    unknown-request: |
-     Неизвестная команда, используйте /start для вызова меню
-    select-action-or-start: |
-     выберите один из пунктов меню, или используйте /start для вызова главного меню
-    select-action: |
-     Выберите действие:
-    failed-to-receive-records: |
-     ⚠️ Не удалось получить записи:
+    profile: "PROFILES: {}"
+    bot-initializing: Bot is initializing...
+    unknown-request: Неизвестная команда, используйте /start для вызова меню
+    select-action-or-start: выберите один из пунктов меню, или используйте /start для вызова главного меню
+    select-action: "Выберите действие: "
+    failed-to-receive-records: "⚠️ Не удалось получить записи: "
 
   main-menu:
     start: |
       Привет! добро пожаловать в бот контроля за давлением.
       Выберите команду из меню:
     back: Вы вернулись в главное меню
-    registration-fail: |
-      Ошибка при регистрации пользователя.
+    registration-fail: Ошибка при регистрации пользователя.
     help: |
       Описание команд:
       Отправить данные о давлении - 
@@ -77,8 +74,7 @@ messages:
   pressure-menu:
     start: ${messages.common.select-action}
     one-day-request: Введите дату в формате ДД.ММ.ГГГГ (пример 01.01.2025)
-    period-request: |
-      Введите количество дней:
+    period-request: "Введите количество дней: "
     failed-to-receive-records: ${messages.common.failed-to-receive-records}
     no-records: Записи отсутствуют.
     no-records-by-date: За указанную дату записи отсутствуют.
@@ -101,3 +97,25 @@ messages:
     unknown-request: ${messages.common.select-action-or-start}
     failed-to-receive-records: ${messages.common.failed-to-receive-records}
     no-records-for-period: За выбранный период записи отсутствуют!
+
+  wake-up-menu:
+    sleep: |
+      💤 Все сервисы уснули.
+      Нажми "РАЗБУДИТЬ СЕРВИСЫ", чтобы разбудить их.
+    failure: Не все сервисы проснулись, повторите попытку через минуту.
+
+  webhook:
+    set-webhook: "Webhook установлен: {}"
+    webhook-set-error: Ошибка при установке Webhook
+    webhook-url: https://api.telegram.org/bot%s/setWebhook?url=%s/webhook
+    webhook-registration-response: "Webhook registration response: {}"
+    failed-register-webhook: "Failed to register webhook: {}"
+
+  exception:
+    exception: exception
+
+  log:
+    service-not-responding: "Сервис не отвечает: {} ({})"
+    unsupported-method: "Неподдерживаемый метод: {}"
+    sending-message-error: "Ошибка отправки сообщения: {}"
+    session-state: "SESSION STATE: {}"

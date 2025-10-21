@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 public class PdfMenu {
+
     private String start;
     private String unknownRequest;
     private String failedToReceiveRecords;

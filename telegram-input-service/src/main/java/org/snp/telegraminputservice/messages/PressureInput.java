@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 public class PressureInput {
+
     private String systolicInput;
     private String incorrectSystolicInput;
     private String diastolicInput;

@@ -1,5 +1,10 @@
+#project
+image-recognition-service/
+auth-service/
+
 # Maven
 /target/
+target/
 #/.mvn/
 dependency-reduced-pom.xml
 buildNumber.properties

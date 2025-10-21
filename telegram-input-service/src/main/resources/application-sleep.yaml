@@ -1,0 +1,6 @@
+sleep:
+  timeout-minutes: ${SLEEP_TIMEOUT_MINUTES:1}
+  ping-urls:
+    - ${SLEEP_PING_URL_1:http://localhost:8080/ping}
+    - ${SLEEP_PING_URL_2:http://localhost:8083/ping}
+    - ${SLEEP_PING_URL_3:http://localhost:8081/ping}

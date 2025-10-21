@@ -7,6 +7,9 @@ import org.snp.telegraminputservice.configuration.TelegramBotProperties;
 import org.snp.telegraminputservice.handler.CommandHandler;
 import org.snp.telegraminputservice.messages.MessagesProperties;
 import org.snp.telegraminputservice.model.UserSession;
+import org.snp.telegraminputservice.model.UserState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
@@ -19,6 +22,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,11 +35,17 @@ public class TelegramBotService extends TelegramWebhookBot {
     private final List<CommandHandler> handlers;
     private final MessagesProperties messagesProperties;
 
+    @Autowired(required = false)
+    private SleepService sleepService;
+
+    @Autowired
+    private Environment environment;
+
     private final Map<Long, UserSession> sessions = new HashMap<>();
 
     @PostConstruct
     public void init() {
-        System.out.println("Bot is initializing...");
+        log.info(messagesProperties.getCommon().getBotInitializing());
     }
 
     @Override
@@ -59,7 +69,21 @@ public class TelegramBotService extends TelegramWebhookBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             Message message = update.getMessage();
             Long chatId = message.getChatId();
-            UserSession session = sessions.computeIfAbsent(chatId, id -> new UserSession());
+            UserSession session = sessions.computeIfAbsent(chatId, id -> {
+                UserSession newUserSession = new UserSession();
+                newUserSession.setChatId(chatId);
+                newUserSession.setUserState(UserState.NONE);
+                newUserSession.setLastActivity(Instant.now());
+                return newUserSession;
+            });
+
+            if (sleepService != null && sleepService.isInactive(session)) {
+                session.setUserState(UserState.WAKE_UP_MENU);
+            }
+            session.setLastActivity(Instant.now());
+
+            log.info(messagesProperties.getLog().getSessionState(), session.getUserState());
+
             List<PartialBotApiMethod<?>> results = null;
 
             for (CommandHandler handler : handlers) {
@@ -84,10 +108,10 @@ public class TelegramBotService extends TelegramWebhookBot {
                     } else if (method instanceof SendVideo sendVideo) {
                         execute(sendVideo);
                     } else {
-                        log.error("Неподдерживаемый метод: {}", method.getClass().getSimpleName());
+                        log.error(messagesProperties.getLog().getUnsupportedMethod(), method.getClass().getSimpleName());
                     }
                 } catch (TelegramApiException e) {
-                    log.error("Ошибка отправки сообщения: {}", e.getMessage(), e);
+                    log.error(messagesProperties.getLog().getSendingMessageError(), e.getMessage(), e);
                 }
             }
         }
@@ -96,6 +120,6 @@ public class TelegramBotService extends TelegramWebhookBot {
 
     @Override
     public void setWebhook(SetWebhook setWebhook) throws TelegramApiException {
-        System.out.println("Webhook установлен: " + setWebhook.getUrl());
+        log.info(messagesProperties.getWebhook().getSetWebhook(), setWebhook.getUrl());
     }
 }

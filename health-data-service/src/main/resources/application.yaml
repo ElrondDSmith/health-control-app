@@ -9,8 +9,8 @@ logging:
     org:
       springframework:
         jdbc:
-          core: TRACE
-    com.zaxxer.hikari: DEBUG
+          core: INFO
+    com.zaxxer.hikari: INFO
 
 #database settings
 custom:

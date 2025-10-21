@@ -14,5 +14,9 @@ public class MessagesProperties {
     private ReceiveMenu receiveMenu;
     private PressureMenu pressureMenu;
     private PdfMenu pdfMenu;
+    private WakeUpMenu wakeUpMenu;
     private Common common;
+    private Exception exception;
+    private Log log;
+    private Webhook webhook;
 }
